@@ -6,6 +6,19 @@
   <title>Stoplight Control</title>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <style>
+    /* Page Title */
+    .page-title {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 28px;
+      font-weight: bold;
+    }
+    /* Main container */
+    main {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
     /* Stoplight styling */
     .stoplight {
       width: 100px;
@@ -13,7 +26,7 @@
       padding: 20px;
       text-align: center;
       border-radius: 10px;
-      margin: auto;
+      margin: 20px auto;
     }
     .light {
       width: 50px;
@@ -25,27 +38,35 @@
     .red { background-color: red; }
     .yellow { background-color: yellow; }
     .green { background-color: green; }
-    
-    /* Control sections */
-    .control-section {
-      margin-top: 30px;
-      text-align: center;
-    }
-    .control-section h2 {
-      margin-bottom: 10px;
+    /* Power button styling: now directly under the stoplight and centered */
+    #power-off-btn {
+      display: block;
+      margin: 10px auto;
+      background: none;
+      border: none;
+      font-size: 32px;
+      cursor: pointer;
+      color: #333;
     }
     hr {
       margin: 30px 0;
     }
-    
-    /* Modal styling */
+    /* Control sections */
+    .control-section {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .control-section h2 {
+      margin-bottom: 10px;
+    }
+    /* Modal styling (full-screen overlay) */
     .modal {
       display: none;
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
-      background-color: rgba(0,0,0,0.5);
-      z-index: 1000;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 1200;
     }
     .modal .modal-content {
       background-color: #fff;
@@ -54,7 +75,7 @@
       padding: 20px;
       text-align: center;
       border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     }
     .modal button {
       margin: 10px;
@@ -64,13 +85,11 @@
       width: 60px;
       margin: 5px;
     }
-    
-    /* Additional styling for message modal */
+    /* Message modal additional styling */
     #message-modal .modal-content {
       width: 250px;
     }
-    
-    /* Styling for settings modal rows */
+    /* Settings modal row alignment */
     .settings-row {
       display: flex;
       align-items: center;
@@ -84,137 +103,126 @@
     .settings-row input {
       flex: 0 0 55%;
     }
-    
-    /* Power off icon styling (upper right corner) */
-    #power-off-btn {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      background: none;
-      border: none;
-      font-size: 32px;
-      cursor: pointer;
-      display: none;
-    }
   </style>
 </head>
 <body>
-  <h1 style="text-align: center;">Stoplight Control</h1>
-  
-  <!-- Main Controls Section (visible when system is on) -->
-  <div id="main-controls" style="display: none;">
-    <!-- Power Off Icon -->
-    <button id="power-off-btn" title="Turn Off System">⏻</button>
+  <header class="page-title">Stoplight Control</header>
+  <main>
+    <!-- Main Controls Section (visible when system is on) -->
+    <div id="main-controls" style="display: none;">
+      <!-- Stoplight display -->
+      <div class="stoplight">
+        <div id="red-light" class="light"></div>
+        <div id="yellow-light" class="light"></div>
+        <div id="green-light" class="light"></div>
+      </div>
+      
+      <!-- Power Off Button directly underneath stoplight -->
+      <button id="power-off-btn" title="Turn Off System">⏻</button>
+      
+      <hr>
+      
+      <!-- Automatic Controls Section -->
+      <div class="control-section auto-controls">
+        <h2>Automatic Controls</h2>
+        <button id="auto-btn">Start Auto</button>
+        <button id="stop-btn">Stop Auto</button>
+        <button id="settings-btn">Settings</button>
+      </div>
+      
+      <!-- Manual Controls Section -->
+      <div class="control-section manual-controls">
+        <h2>Manual Controls</h2>
+        <button id="manual-btn">Manual Cycle</button>
+      </div>
+    </div>
     
-    <!-- Stoplight display -->
-    <div class="stoplight">
-      <div id="red-light" class="light"></div>
-      <div id="yellow-light" class="light"></div>
-      <div id="green-light" class="light"></div>
+    <!-- Off Modal (overlay shown when system is off) -->
+    <div id="off-modal" class="modal">
+      <div class="modal-content">
+        <p id="off-message">System is powered off. Press "Turn On" to power on.</p>
+        <button id="off-turn-on-btn">Turn On</button>
+      </div>
     </div>
     
-    <hr>
+    <!-- Turn On Confirmation Modal (optional) -->
+    <div id="turn-on-confirm-modal" class="modal">
+      <div class="modal-content">
+        <p id="turn-on-confirm-message">Are you sure you want to power on the system?</p>
+        <div id="turn-on-confirm-buttons">
+          <button id="turn-on-confirm-yes">Yes</button>
+          <button id="turn-on-confirm-cancel">Cancel</button>
+        </div>
+      </div>
+    </div>
     
-    <!-- Automatic Controls Section -->
-    <div class="control-section auto-controls">
-      <h2>Automatic Controls</h2>
-      <button id="auto-btn">Start Auto</button>
-      <button id="stop-btn">Stop Auto</button>
-      <button id="settings-btn">Settings</button>
+    <!-- Turn Off Confirmation Modal -->
+    <div id="turn-off-confirm-modal" class="modal">
+      <div class="modal-content">
+        <p id="turn-off-confirm-message">Are you sure you want to power off the system?</p>
+        <div id="turn-off-confirm-buttons">
+          <button id="turn-off-confirm-yes">Yes</button>
+          <button id="turn-off-confirm-cancel">Cancel</button>
+        </div>
+      </div>
     </div>
     
-    <!-- Manual Controls Section -->
-    <div class="control-section manual-controls">
-      <h2>Manual Controls</h2>
-      <button id="manual-btn">Manual Cycle</button>
-    </div>
-  </div>
-  
-  <!-- Off Modal (used when system is off) -->
-  <div id="off-modal" class="modal">
-    <div class="modal-content">
-      <p id="off-message">System is powered off. Press "Turn On" to power on.</p>
-      <button id="off-turn-on-btn">Turn On</button>
-    </div>
-  </div>
-  
-  <!-- Turn On Confirmation Modal (optional, if you want confirmation) -->
-  <div id="turn-on-confirm-modal" class="modal">
-    <div class="modal-content">
-      <p id="turn-on-confirm-message">Are you sure you want to power on the system?</p>
-      <div id="turn-on-confirm-buttons">
-        <button id="turn-on-confirm-yes">Yes</button>
-        <button id="turn-on-confirm-cancel">Cancel</button>
+    <!-- Confirm Stop Auto Modal -->
+    <div id="confirm-modal" class="modal">
+      <div class="modal-content">
+        <p id="confirm-message">Are you sure you want to stop auto mode?</p>
+        <div id="confirm-buttons">
+          <button id="confirm-yes">Yes</button>
+          <button id="confirm-no">No</button>
+        </div>
       </div>
     </div>
-  </div>
-  
-  <!-- Turn Off Confirmation Modal -->
-  <div id="turn-off-confirm-modal" class="modal">
-    <div class="modal-content">
-      <p id="turn-off-confirm-message">Are you sure you want to power off the system?</p>
-      <div id="turn-off-confirm-buttons">
-        <button id="turn-off-confirm-yes">Yes</button>
-        <button id="turn-off-confirm-cancel">Cancel</button>
+    
+    <!-- Settings Confirmation Modal -->
+    <div id="settings-confirm-modal" class="modal">
+      <div class="modal-content">
+        <p id="settings-confirm-message">Modifying settings will stop automation. Continue?</p>
+        <div id="settings-confirm-buttons">
+          <button id="settings-confirm-yes">Yes</button>
+          <button id="settings-confirm-cancel">Cancel</button>
+        </div>
       </div>
     </div>
-  </div>
-  
-  <!-- Confirm Stop Auto Modal -->
-  <div id="confirm-modal" class="modal">
-    <div class="modal-content">
-      <p id="confirm-message">Are you sure you want to stop auto mode?</p>
-      <div id="confirm-buttons">
-        <button id="confirm-yes">Yes</button>
-        <button id="confirm-no">No</button>
+    
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal">
+      <div class="modal-content">
+        <h2>Automatic Mode Settings</h2>
+        <p>Set durations (in seconds):</p>
+        <div class="settings-row">
+          <label for="duration-green">Green:</label>
+          <input type="number" id="duration-green" value="3" min="0.5" step="0.5">
+        </div>
+        <div class="settings-row">
+          <label for="duration-yellow">Yellow:</label>
+          <input type="number" id="duration-yellow" value="2" min="0.5" step="0.5">
+        </div>
+        <div class="settings-row">
+          <label for="duration-red">Red:</label>
+          <input type="number" id="duration-red" value="3" min="0.5" step="0.5">
+        </div>
+        <div id="settings-buttons">
+          <button id="settings-save">Save</button>
+          <button id="settings-cancel">Cancel</button>
+        </div>
       </div>
     </div>
-  </div>
-  
-  <!-- Settings Confirmation Modal -->
-  <div id="settings-confirm-modal" class="modal">
-    <div class="modal-content">
-      <p id="settings-confirm-message">Modifying settings will stop automation. Continue?</p>
-      <div id="settings-confirm-buttons">
-        <button id="settings-confirm-yes">Yes</button>
-        <button id="settings-confirm-cancel">Cancel</button>
+    
+    <!-- Message Modal for updates -->
+    <div id="message-modal" class="modal">
+      <div class="modal-content">
+        <p id="message-text"></p>
       </div>
     </div>
-  </div>
-  
-  <!-- Settings Modal -->
-  <div id="settings-modal" class="modal">
-    <div class="modal-content">
-      <h2>Automatic Mode Settings</h2>
-      <p>Set durations (in seconds):</p>
-      <div class="settings-row">
-        <label for="duration-green">Green:</label>
-        <input type="number" id="duration-green" value="3" min="0.5" step="0.5">
-      </div>
-      <div class="settings-row">
-        <label for="duration-yellow">Yellow:</label>
-        <input type="number" id="duration-yellow" value="2" min="0.5" step="0.5">
-      </div>
-      <div class="settings-row">
-        <label for="duration-red">Red:</label>
-        <input type="number" id="duration-red" value="3" min="0.5" step="0.5">
-      </div>
-      <div id="settings-buttons">
-        <button id="settings-save">Save</button>
-        <button id="settings-cancel">Cancel</button>
-      </div>
-    </div>
-  </div>
-  
-  <!-- Message Modal for updates -->
-  <div id="message-modal" class="modal">
-    <div class="modal-content">
-      <p id="message-text"></p>
-    </div>
-  </div>
+  </main>
   
   <script>
-    // Update the light display
+    // Function to update the light display
     function updateLight() {
       $.get("/get_light", function(data) {
         $(".light").removeClass("red yellow green");
@@ -224,7 +232,7 @@
       });
     }
     
-    // Update the UI based on system state using /get_system_state
+    // Function to update the UI based on system state from /get_system_state
     function updateSystemUI() {
       $.get("/get_system_state", function(data) {
         if (data.system_on) {
@@ -232,7 +240,7 @@
           $("#power-off-btn").show();
           $("#off-modal").hide();
         } else {
-          $("#main-controls").hide();
+          $("#main-controls").show();  /* Keep main controls visible (but not interactive) in backdrop */
           $("#power-off-btn").hide();
           $("#off-modal").fadeIn();
         }
@@ -255,7 +263,7 @@
       });
     });
     
-    // (Optional) Turn On Confirmation Modal
+    // Optional: Turn On Confirmation Modal (if desired)
     $("#turn-on-confirm-cancel").click(function() {
       $("#turn-on-confirm-modal").fadeOut();
     });
@@ -272,7 +280,7 @@
       });
     });
     
-    // Power Off: When the power-off icon is clicked, show confirmation modal
+    // Power Off: Clicking the power-off icon shows the turn-off confirmation modal.
     $("#power-off-btn").click(function() {
       $("#turn-off-confirm-modal").fadeIn();
     });

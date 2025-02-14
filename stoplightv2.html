@@ -94,17 +94,18 @@
       border: none;
       font-size: 32px;
       cursor: pointer;
+      display: none;
     }
   </style>
 </head>
 <body>
   <h1 style="text-align: center;">Stoplight Control</h1>
   
-  <!-- Power Off Icon (visible when system is on) -->
-  <button id="power-off-btn" title="Turn Off System">⏻</button>
-  
-  <!-- Main Controls Section -->
-  <div id="main-controls">
+  <!-- Main Controls Section (visible when system is on) -->
+  <div id="main-controls" style="display: none;">
+    <!-- Power Off Icon -->
+    <button id="power-off-btn" title="Turn Off System">⏻</button>
+    
     <!-- Stoplight display -->
     <div class="stoplight">
       <div id="red-light" class="light"></div>
@@ -129,15 +130,15 @@
     </div>
   </div>
   
-  <!-- Off Modal: Appears when system is turned off -->
-  <div id="turn-off-modal" class="modal">
+  <!-- Off Modal (used when system is off) -->
+  <div id="off-modal" class="modal">
     <div class="modal-content">
-      <p id="turn-off-message">System is powered off, press power to turn on.</p>
-      <button id="turn-on-from-off-btn">Turn On</button>
+      <p id="off-message">System is powered off. Press "Turn On" to power on.</p>
+      <button id="off-turn-on-btn">Turn On</button>
     </div>
   </div>
   
-  <!-- Turn On Confirmation Modal (if needed) -->
+  <!-- Turn On Confirmation Modal (optional, if you want confirmation) -->
   <div id="turn-on-confirm-modal" class="modal">
     <div class="modal-content">
       <p id="turn-on-confirm-message">Are you sure you want to power on the system?</p>
@@ -148,10 +149,21 @@
     </div>
   </div>
   
-  <!-- Stop Confirmation Modal -->
+  <!-- Turn Off Confirmation Modal -->
+  <div id="turn-off-confirm-modal" class="modal">
+    <div class="modal-content">
+      <p id="turn-off-confirm-message">Are you sure you want to power off the system?</p>
+      <div id="turn-off-confirm-buttons">
+        <button id="turn-off-confirm-yes">Yes</button>
+        <button id="turn-off-confirm-cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Confirm Stop Auto Modal -->
   <div id="confirm-modal" class="modal">
     <div class="modal-content">
-      <p id="confirm-message">Are you sure you want to stop?</p>
+      <p id="confirm-message">Are you sure you want to stop auto mode?</p>
       <div id="confirm-buttons">
         <button id="confirm-yes">Yes</button>
         <button id="confirm-no">No</button>
@@ -162,7 +174,7 @@
   <!-- Settings Confirmation Modal -->
   <div id="settings-confirm-modal" class="modal">
     <div class="modal-content">
-      <p id="settings-confirm-message">Modifying settings will stop the automation. Do you want to continue?</p>
+      <p id="settings-confirm-message">Modifying settings will stop automation. Continue?</p>
       <div id="settings-confirm-buttons">
         <button id="settings-confirm-yes">Yes</button>
         <button id="settings-confirm-cancel">Cancel</button>
@@ -202,7 +214,7 @@
   </div>
   
   <script>
-    // Function to update the light display
+    // Update the light display
     function updateLight() {
       $.get("/get_light", function(data) {
         $(".light").removeClass("red yellow green");
@@ -212,32 +224,26 @@
       });
     }
     
-    // Function to update system UI from /get_system_state
+    // Update the UI based on system state using /get_system_state
     function updateSystemUI() {
       $.get("/get_system_state", function(data) {
         if (data.system_on) {
           $("#main-controls").show();
           $("#power-off-btn").show();
+          $("#off-modal").hide();
         } else {
           $("#main-controls").hide();
           $("#power-off-btn").hide();
+          $("#off-modal").fadeIn();
         }
       });
     }
     
     // Button click handlers:
     
-    // Power Off icon click – turns system off and shows off modal
-    $("#power-off-btn").click(function() {
-      $.post("/turn_off", function(response) {
-        updateSystemUI();
-        $("#turn-off-modal").fadeIn();
-      });
-    });
-    
-    // In off modal, "Turn On" button acts as a power on switch
-    $("#turn-on-from-off-btn").click(function() {
-      $("#turn-off-modal").fadeOut(function() {
+    // Off Modal: "Turn On" button click
+    $("#off-turn-on-btn").click(function() {
+      $("#off-modal").fadeOut(function() {
         $("#message-text").text("Powering on...");
         $("#message-modal").fadeIn();
         setTimeout(function() {
@@ -249,14 +255,51 @@
       });
     });
     
-    // Manual Cycle
+    // (Optional) Turn On Confirmation Modal
+    $("#turn-on-confirm-cancel").click(function() {
+      $("#turn-on-confirm-modal").fadeOut();
+    });
+    $("#turn-on-confirm-yes").click(function() {
+      $("#turn-on-confirm-modal").fadeOut(function() {
+        $("#message-text").text("Powering on...");
+        $("#message-modal").fadeIn();
+        setTimeout(function() {
+          $.post("/turn_on", function(response) {
+            updateSystemUI();
+            $("#message-modal").fadeOut();
+          });
+        }, 3000);
+      });
+    });
+    
+    // Power Off: When the power-off icon is clicked, show confirmation modal
+    $("#power-off-btn").click(function() {
+      $("#turn-off-confirm-modal").fadeIn();
+    });
+    $("#turn-off-confirm-cancel").click(function() {
+      $("#turn-off-confirm-modal").fadeOut();
+    });
+    $("#turn-off-confirm-yes").click(function() {
+      $("#turn-off-confirm-modal").fadeOut(function() {
+        $("#message-text").text("Powering off...");
+        $("#message-modal").fadeIn();
+        setTimeout(function() {
+          $.post("/turn_off", function(response) {
+            updateSystemUI();
+            $("#message-modal").fadeOut();
+          });
+        }, 3000);
+      });
+    });
+    
+    // Manual Cycle button
     $("#manual-btn").click(function() {
       $.post("/manual_cycle", function() {
         updateLight();
       });
     });
     
-    // Start Auto
+    // Start Auto button
     $("#auto-btn").click(function() {
       $.post("/start_auto", function() {
         $("#manual-btn").prop("disabled", true);
@@ -265,39 +308,35 @@
       });
     });
     
-    // Stop Auto confirmation modal
+    // Stop Auto: Show confirmation modal
     $("#stop-btn").click(function() {
       $("#confirm-modal").fadeIn();
     });
-    
     $("#confirm-no").click(function() {
       $("#confirm-modal").fadeOut();
     });
-    
     $("#confirm-yes").click(function() {
       $.post("/stop_auto", function() {
         $("#manual-btn").prop("disabled", false);
         $("#auto-btn").prop("disabled", false);
         $("#stop-btn").prop("disabled", true);
       });
-      $("#confirm-message").text("Stopping stoplight automation...");
+      $("#confirm-message").text("Stopping auto mode...");
       $("#confirm-buttons").hide();
       setTimeout(function() {
-        $("#confirm-message").text("Are you sure you want to stop?");
+        $("#confirm-message").text("Are you sure you want to stop auto mode?");
         $("#confirm-buttons").show();
         $("#confirm-modal").fadeOut();
       }, 4000);
     });
     
-    // Settings button – confirmation before opening settings modal
+    // Settings: Show settings confirmation modal
     $("#settings-btn").click(function() {
       $("#settings-confirm-modal").fadeIn();
     });
-    
     $("#settings-confirm-cancel").click(function() {
       $("#settings-confirm-modal").fadeOut();
     });
-    
     $("#settings-confirm-yes").click(function() {
       $.post("/stop_auto", function() {
         $("#manual-btn").prop("disabled", false);
@@ -308,16 +347,13 @@
         $("#settings-modal").fadeIn();
       });
     });
-    
     $("#settings-cancel").click(function() {
       $("#settings-modal").fadeOut();
     });
-    
     $("#settings-save").click(function() {
       var greenTime = $("#duration-green").val();
       var yellowTime = $("#duration-yellow").val();
       var redTime = $("#duration-red").val();
-      
       if (!greenTime || !yellowTime || !redTime) {
         $("#message-text").text("Please enter valid numbers for all durations.");
         $("#message-modal").fadeIn();
@@ -326,13 +362,11 @@
         }, 3000);
         return;
       }
-      
       var settings = {
         green: parseFloat(greenTime),
         yellow: parseFloat(yellowTime),
         red: parseFloat(redTime)
       };
-      
       $.ajax({
         url: "/update_settings",
         method: "POST",

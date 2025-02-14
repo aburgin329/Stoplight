@@ -8,12 +8,12 @@ app = Flask(__name__)
 # Set up the GPIO chip (usually "gpiochip0" on Raspberry Pi)
 chip = gpiod.Chip("gpiochip0")
 
-# Define your GPIO pins
+# Define GPIO pins
 RED_PIN = 17
 YELLOW_PIN = 27
 GREEN_PIN = 22
 
-# Request each GPIO line for output. Default value is off (0).
+# Request GPIO lines for output (default off)
 red_line = chip.get_line(RED_PIN)
 yellow_line = chip.get_line(YELLOW_PIN)
 green_line = chip.get_line(GREEN_PIN)
@@ -22,16 +22,16 @@ red_line.request(consumer="flask", type=gpiod.LINE_REQ_DIR_OUT, default_vals=[0]
 yellow_line.request(consumer="flask", type=gpiod.LINE_REQ_DIR_OUT, default_vals=[0])
 green_line.request(consumer="flask", type=gpiod.LINE_REQ_DIR_OUT, default_vals=[0])
 
-# Define stoplight states and initial conditions
+# Stoplight state and initial conditions
 lights = ["green", "yellow", "red"]
-current_index = 0  # index for current light
-automatic_running = False  # auto mode not running by default
-system_on = True           # system is on by default
+current_index = 0
+automatic_running = False  # Auto mode is off by default
+system_on = False          # System is off by default
 
 # Global settings for auto durations (in seconds)
 auto_durations = {"green": 3.0, "yellow": 2.0, "red": 3.0}
 
-# Event for cancelable waiting in auto cycle
+# Event for cancelable wait in auto cycle
 stop_event = threading.Event()
 
 def update_lights():
@@ -46,7 +46,7 @@ def update_lights():
         green_line.set_value(1 if lights[current_index] == "green" else 0)
 
 def automatic_cycle():
-    """Automatically cycle the lights using the specified durations."""
+    """Automatically cycle the lights using specified durations."""
     global current_index, automatic_running, auto_durations, system_on
     while automatic_running and system_on:
         current_light = lights[current_index]
@@ -70,7 +70,7 @@ def get_light():
 
 @app.route("/manual_cycle", methods=["POST"])
 def manual_cycle():
-    """Manually cycle to the next light (only if system is on and auto mode is off)."""
+    """Cycle manually to the next light (only if system is on and auto mode is off)."""
     global current_index
     if system_on and not automatic_running:
         current_index = (current_index + 1) % len(lights)
@@ -113,7 +113,7 @@ def update_settings():
 
 @app.route("/get_mode", methods=["GET"])
 def get_mode():
-    """Return current mode: 'off', 'auto' or 'manual'."""
+    """Return current mode: 'off', 'auto', or 'manual'."""
     if not system_on:
         return jsonify({"mode": "off"})
     return jsonify({"mode": "auto" if automatic_running else "manual"})
@@ -125,7 +125,7 @@ def get_system_state():
 
 @app.route("/turn_on", methods=["POST"])
 def turn_on():
-    """Turn on the system. Does not start auto mode automatically."""
+    """Turn on the system (do not start auto mode automatically)."""
     global system_on
     system_on = True
     update_lights()
@@ -133,7 +133,7 @@ def turn_on():
 
 @app.route("/turn_off", methods=["POST"])
 def turn_off():
-    """Turn off the system. Stops auto mode and turns off all lights."""
+    """Turn off the system (stop auto mode and turn off lights)."""
     global system_on, automatic_running
     system_on = False
     automatic_running = False
@@ -143,7 +143,7 @@ def turn_off():
 
 if __name__ == "__main__":
     try:
-        update_lights()
+        update_lights()  # Ensure lights are off on startup.
         app.run(host="0.0.0.0", port=5000, debug=True, use_reloader=False)
     except KeyboardInterrupt:
         red_line.release()

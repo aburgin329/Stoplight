@@ -24,18 +24,18 @@ green_line.request(consumer="flask", type=gpiod.LINE_REQ_DIR_OUT, default_vals=[
 
 # Stoplight state and system flags
 lights = ["green", "yellow", "red"]
-current_index = 0           # Index for current light state
-automatic_running = False   # Auto mode off by default
-system_on = False           # System is off by default
+current_index = 0            # Logical index for the current light
+automatic_running = False    # Auto mode off by default
+system_on = False            # System is off by default
 
-# Global settings for auto mode durations (in seconds)
+# Global settings for auto durations (in seconds)
 auto_durations = {"green": 3.0, "yellow": 2.0, "red": 3.0}
 
-# Event for cancelable waiting in the auto cycle
+# Event for cancelable waiting in auto cycle
 stop_event = threading.Event()
 
 def update_lights():
-    """Update physical LEDs. If system is off, turn all LEDs off."""
+    """Update physical LEDs. If the system is off, turn all LEDs off."""
     if not system_on:
         red_line.set_value(0)
         yellow_line.set_value(0)
@@ -46,7 +46,7 @@ def update_lights():
         green_line.set_value(1 if lights[current_index] == "green" else 0)
 
 def automatic_cycle():
-    """Cycle the stoplight automatically using the durations from auto_durations."""
+    """Automatically cycle the stoplight using the durations in auto_durations."""
     global current_index, automatic_running, auto_durations, system_on
     while automatic_running and system_on:
         current_light = lights[current_index]
@@ -70,7 +70,7 @@ def get_light():
 
 @app.route("/manual_cycle", methods=["POST"])
 def manual_cycle():
-    """Cycle to the next light manually (if system is on and auto mode is off)."""
+    """Manually cycle to the next light (if system is on and auto mode is off)."""
     global current_index
     if system_on and not automatic_running:
         current_index = (current_index + 1) % len(lights)
@@ -98,7 +98,7 @@ def stop_auto():
 
 @app.route("/update_settings", methods=["POST"])
 def update_settings():
-    """Update auto mode durations based on user input."""
+    """Update auto durations based on user input."""
     global auto_durations
     data = request.get_json()
     if not data:
@@ -125,15 +125,17 @@ def get_system_state():
 
 @app.route("/turn_on", methods=["POST"])
 def turn_on():
-    """Turn on the system (but do not start auto mode automatically)."""
-    global system_on
+    """Turn on the system and reset to manual mode."""
+    global system_on, automatic_running, current_index
     system_on = True
+    automatic_running = False  # Ensure auto mode is off
+    current_index = 0          # Reset to initial state (typically 'green')
     update_lights()
     return jsonify({"status": "system turned on", "system_on": system_on})
 
 @app.route("/turn_off", methods=["POST"])
 def turn_off():
-    """Turn off the system (stop auto mode and turn off LEDs)."""
+    """Turn off the system (stop auto mode and turn off all LEDs)."""
     global system_on, automatic_running
     system_on = False
     automatic_running = False

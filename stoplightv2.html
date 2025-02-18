@@ -52,11 +52,11 @@
       display: block;
       margin: 10px auto;
       background: none;
-      border: 2px solid #000;  /* Black outline */
+      border: 2px solid #000;
       border-radius: 50%;
       font-size: 32px;
       cursor: pointer;
-      color: #000;             /* Black icon/text */
+      color: #000;
       padding: 5px 10px;
     }
     
@@ -79,7 +79,7 @@
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
-      background-color: rgba(0, 0, 0, 0.8);
+      background-color: rgba(0,0,0,0.8);
       z-index: 2000;
     }
     .modal .modal-content {
@@ -155,7 +155,7 @@
       </div>
     </div>
     
-    <!-- Off Modal (overlay when system is off, covering entire page) -->
+    <!-- Off Modal (overlay shown when system is off, covering entire page) -->
     <div id="off-modal" class="modal">
       <div class="modal-content">
         <p id="off-message">System is powered off. Press "Turn On" to power on.</p>
@@ -260,27 +260,32 @@
         } else {
           $("#main-controls").hide();
           $("#off-modal").fadeIn();
+          // Ensure the power button remains visible in the background
+          $("#power-off-btn").show();
         }
       });
     }
     
     // Button click handlers:
     
-    // Off Modal: "Turn On" button click (modal covers entire screen)
+    // Off Modal: "Turn On" button click (modal covers entire page)
     $("#off-turn-on-btn").click(function() {
       $("#off-modal").fadeOut(function() {
         $("#message-text").text("Powering on...");
         $("#message-modal").fadeIn();
         setTimeout(function() {
           $.post("/turn_on", function(response) {
-            updateSystemUI();
-            $("#message-modal").fadeOut();
+            // Also explicitly call stop_auto to reset auto mode
+            $.post("/stop_auto", function() {
+              updateSystemUI();
+              $("#message-modal").fadeOut();
+            });
           });
         }, 3000);
       });
     });
     
-    // Optional: Turn On Confirmation Modal (if desired)
+    // Optional Turn On Confirmation Modal
     $("#turn-on-confirm-cancel").click(function() {
       $("#turn-on-confirm-modal").fadeOut();
     });
@@ -290,10 +295,12 @@
         $("#message-modal").fadeIn();
         setTimeout(function() {
           $.post("/turn_on", function(response) {
-            updateSystemUI();
-            $("#message-modal").fadeOut();
-          });
-        }, 3000);
+            $.post("/stop_auto", function() {
+              updateSystemUI();
+              $("#message-modal").fadeOut();
+            });
+          }, 3000);
+        });
       });
     });
     

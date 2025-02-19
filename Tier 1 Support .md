@@ -123,5 +123,3 @@ Troubleshooting Steps:
 sudo systemctl status stoplightv2.service
 
 If the service isn’t running, start it. If it fails to start, escalate the issue to Tier 2 support.
-
-You can now copy and use this Markdown content as needed. Let me know if you need further tweaks or updates!

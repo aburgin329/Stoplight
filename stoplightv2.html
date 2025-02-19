@@ -240,7 +240,7 @@
   </main>
   
   <script>
-    // Function to update the light display
+    // Function to update the light display using AJAX polling
     function updateLight() {
       $.get("/get_light", function(data) {
         $(".light").removeClass("red yellow green");
@@ -257,6 +257,10 @@
           $("#main-controls").show();
           $("#power-off-btn").show();
           $("#off-modal").hide();
+          // Set button states for manual mode:
+          $("#stop-btn").prop("disabled", true);    // Stop Auto disabled (grayed out)
+          $("#auto-btn").prop("disabled", false);     // Start Auto enabled
+          $("#manual-btn").prop("disabled", false);   // Manual Cycle enabled
         } else {
           $("#main-controls").hide();
           $("#off-modal").fadeIn();
@@ -275,7 +279,7 @@
         $("#message-modal").fadeIn();
         setTimeout(function() {
           $.post("/turn_on", function(response) {
-            // Also explicitly call stop_auto to reset auto mode
+            // Immediately call stop_auto to ensure manual mode
             $.post("/stop_auto", function() {
               updateSystemUI();
               $("#message-modal").fadeOut();

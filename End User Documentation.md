@@ -51,8 +51,8 @@ Below the stoplight and power button, you’ll find:
 - **Manual Controls:**  
  A button for **Manual Cycle** (to manually step through the light sequence).
 
-- **Off Modal:**  
- When the system is off, an overlay modal appears with the message:  
+- **Off pop up:**  
+ When the system is off, an overlay pop up appears with the message:  
  > "System is powered off. Press 'Turn On' to power on."  
  In this state, only the **"Turn On"** button is active.
 
@@ -63,10 +63,10 @@ Below the stoplight and power button, you’ll find:
 ### 3.1 Turning the System On
 
 - When the system is off:
-- An overlay modal will appear.
-- Click the **"Turn On"** button in the modal.
+- An overlay pop up will appear.
+- Click the **"Turn On"** button in the pop up.
 - A message **"Powering on…"** will briefly display while the system turns on.
-- The modal will close, and the main controls (stoplight, power button, and control sections) will be visible.
+- The pop up will close, and the main controls (stoplight, power button, and control sections) will be visible.
 
 ---
 
@@ -75,9 +75,9 @@ Below the stoplight and power button, you’ll find:
 - When the system is on:
 - The power button appears directly below the stoplight.
 - Click the power button (**⏻**).
-- A confirmation modal will appear asking,  
+- A confirmation pop up will appear asking,  
  > "Are you sure you want to power off the system?"  
-- Click **"Yes"** to power off. A **"Powering off…"** message will briefly display, then the system will turn off and the off modal will appear.
+- Click **"Yes"** to power off. A **"Powering off…"** message will briefly display, then the system will turn off and the off pop up will appear.
 
 ---
 
@@ -98,7 +98,7 @@ Below the stoplight and power button, you’ll find:
 
 - **Stopping Auto Mode:**
 - Click the **"Stop Auto"** button.
-- A confirmation modal will appear. Click **"Yes"** to stop auto mode.
+- A confirmation pop up will appear. Click **"Yes"** to stop auto mode.
 - Once stopped, manual controls become available again.
 
 ---
@@ -107,10 +107,10 @@ Below the stoplight and power button, you’ll find:
 
 - **Accessing Settings:**
 - Click the **"Settings"** button in the **Automatic Controls** section.
-- A confirmation modal appears warning that modifying settings will stop auto mode. Click **"Yes"** to continue.
+- A confirmation pop up appears warning that modifying settings will stop auto mode. Click **"Yes"** to continue.
 
 - **Updating Durations:**
-- In the **Settings Modal**, enter new durations (in seconds) for the **Green, Yellow, and Red** lights.
+- In the **Settings pop up**, enter new durations (in seconds) for the **Green, Yellow, and Red** lights.
 - Click **"Save"** to update the settings.
 - A confirmation message will appear indicating that the settings were updated successfully.
 
@@ -119,33 +119,22 @@ Below the stoplight and power button, you’ll find:
 ## 4. Troubleshooting FAQs
 
 ### Q1: The Stoplight LEDs are not changing.
-- **A:**
 - Ensure that your Raspberry Pi is properly connected to the stoplight hardware.
-- Verify that the system is turned on via the **"Turn On"** modal.
+- Verify that the system is turned on via the **"Turn On"** pop up.
 - Refresh the web page or restart the system if necessary.
 
 ### Q2: I don’t see the control buttons.
-- **A:**
 - Make sure you are accessing the correct **IP address and port** (default port is **5000**).
-- Confirm that the system is powered on. If off, the off modal will be displayed.
+- Confirm that the system is powered on. If off, the off pop up will be displayed.
 
 ### Q3: Auto mode is not stopping.
-- **A:**
 - Ensure that you are clicking **"Stop Auto"** and confirming the action.
 - Check the system logs if you have access to them for any errors.
 
 ### Q4: The settings are not updating.
-- **A:**
 - Verify that you have entered **valid numerical values** in the settings fields.
 - If issues persist, restart the system and try updating settings again.
 
 ---
 
-## 5. Contact & Escalation
 
-If you experience issues that cannot be resolved with the above troubleshooting steps, please contact **Tier 2 support**. Provide the following information:
-
-- A **description** of the problem.
-- **Steps** to reproduce the issue.
-- Any **error messages** or unexpected behavior.
-- The **current state** of the system (e.g., auto mode on/off, settings changes).

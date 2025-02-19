@@ -35,7 +35,7 @@ auto_durations = {"green": 3.0, "yellow": 2.0, "red": 3.0}
 stop_event = threading.Event()
 
 def update_lights():
-    """Update physical LEDs. If the system is off, turn all LEDs off."""
+    """Update physical LEDs. If the system is off, turn off all LEDs."""
     if not system_on:
         red_line.set_value(0)
         yellow_line.set_value(0)

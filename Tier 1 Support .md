@@ -1,4 +1,4 @@
-# Stoplight Control System – Hardware Support Documentation
+# Stoplight Control System – Hardware and Software Support Documentation
 
 ## Overview
 
@@ -13,8 +13,8 @@ The Stoplight Control System is built on a **Raspberry Pi 5** and is designed to
   - **Green LED** – "Go"
   - **Yellow LED** – "Caution"
   - **Red LED** – "Stop"
-- **Resistors** – Typically **220Ω to 330Ω** to limit current and protect the LEDs.
-- **Breadboard & Jumper Wires** – Used for prototyping circuit connections.
+- **Resistors** – **75Ω** to limit current and protect the LEDs.
+- **Breadboard & Jumper Wires** – Used for circuit connections.
 - **GPIO Interface Library** – The Flask application uses **gpiod** for GPIO control.
 
 ---
@@ -59,22 +59,55 @@ The Stoplight Control System is built on a **Raspberry Pi 5** and is designed to
 
 **Troubleshooting Steps:**
 1. **Check Wiring:** Ensure the LED, resistor, and ground connections are correct.
-2. **Verify Resistor Value:** Should be **220Ω–330Ω**.
+2. **Verify Resistor Value:** Use multimeter  to verify resistor is **75Ω** 
 3. **Test LED Individually:** Use a **multimeter** or a simple test circuit.
-4. **Check Connections:** Ensure jumper wires and breadboard connections are secure.
+4. **Check Connections:** Ensure the jumper wires are connected to the proper GPIO pins. Ensure jumper wires and breadboard connections are secure.
+    ,--------------------------------.
+| oooooooooooooooooooo J8 PoE +====
+| 1ooooooooooooooooooo   12   | USB
+|  Wi                    oo   +====
+|  Fi  Pi Model 5B V1.3          |
+| |D     ,---.           1o   +====
+| |S     |SoC|            RUN | USB
+| |I     `---'                +====
+| |0               C|            |
+|                  S|       +======
+|                  I| |A|   |   Net
+| pwr      |HDMI|  0| |u|   +======
+`-| |------|    |-----|x|--------'
+
+   3V3  (1) (2)  5V    
+ GPIO2  (3) (4)  5V    
+ GPIO3  (5) (6)  GND   
+ GPIO4  (7) (8)  GPIO14
+   GND  (9) (10) GPIO15
+GPIO17 (11) (12) GPIO18
+GPIO27 (13) (14) GND   
+GPIO22 (15) (16) GPIO23
+   3V3 (17) (18) GPIO24
+GPIO10 (19) (20) GND   
+ GPIO9 (21) (22) GPIO25
+GPIO11 (23) (24) GPIO8 
+   GND (25) (26) GPIO7 
+ GPIO0 (27) (28) GPIO1 
+ GPIO5 (29) (30) GND   
+ GPIO6 (31) (32) GPIO12
+GPIO13 (33) (34) GND   
+GPIO19 (35) (36) GPIO16
+GPIO26 (37) (38) GPIO20
+   GND (39) (40) GPIO21
 
 ---
 
-### 2. No Response from GPIO
+### 2. Hardware Damage or Component Failure
 
 **Symptoms:**
-- Flask application does not change LED state.
+- One LED consistently fails to light.
 
 **Troubleshooting Steps:**
-1. **Verify GPIO Access:** Ensure the Pi’s GPIO is enabled.
-2. **Check Permissions:** Ensure the Flask application user has access to GPIO.
-3. **Check for Conflicting Services:** Ensure no other process (e.g., `pigpiod`) is interfering with **gpiod**.
-4. **Check Logs:** Review system logs for GPIO errors.
+1. **Swap Components:** Test with a known-working LED or resistor.
+2. **Inspect Circuit:** Look for loose connections or damage.
+3. **Review Schematics:** Verify wiring against the design.
 
 ---
 
@@ -90,23 +123,5 @@ The Stoplight Control System is built on a **Raspberry Pi 5** and is designed to
 
 ---
 
-## Escalation Procedures
 
-If the issue cannot be resolved at **Tier 1 Support**, escalate with:
-
-- **Detailed Description** – Identify the issue (e.g., LED not lighting, no GPIO response).
-- **Troubleshooting Steps Taken** – List all attempted fixes.
-- **Wiring Diagrams/Photos** – Provide a visual reference.
-- **Logs/Output** – Include any relevant error messages.
-- **Environment Details** – Raspberry Pi model, OS version, and any modifications.
-
----
-
-## Contact Information
-
-For unresolved issues, contact **Tier 2 Support** via the designated support channel (e.g., email or ticket system).
-
----
-
-This guide is intended as a **quick-reference manual** for hardware support. Feel free to modify or expand it as needed.
 

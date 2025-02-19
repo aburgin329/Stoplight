@@ -1,3 +1,5 @@
+Below is the updated Markdown documentation where the Raspberry Pi GPIO Pinout and J8 Pin Mapping are wrapped in HTML <pre> tags so that they display as plain text while the rest of the document renders normally.
+
 # Stoplight Control System – Hardware and Software Support Documentation
 
 ## Overview
@@ -90,3 +92,53 @@ GPIO26  (37) (38) GPIO20
 - **Green LED:** GPIO **22**
 
 ### File Structure
+
+/home/pi/stoplightv2
+├── stoplightv2.py      # Main Flask application
+└── templates
+└── stoplightv2.html   # Web interface
+
+---
+
+## Common Hardware Issues & Troubleshooting
+
+### 1. LED Not Lighting Up
+
+**Symptoms:**
+- The LED remains off when it is expected to be lit.
+
+**Troubleshooting Steps:**
+1. **Check Wiring:** Ensure the LED, resistor, and ground connections are correctly established.
+2. **Verify Resistor Value:** Use a multimeter to confirm the resistor is **75Ω**.
+3. **Test LED Individually:** Use a multimeter or a simple test circuit to check the LED.
+4. **Check Connections:** Verify that all jumper wires are connected to the correct GPIO pins and that all connections are secure.
+
+### 2. Hardware Damage or Component Failure
+
+**Symptoms:**
+- One LED consistently fails to light.
+
+**Troubleshooting Steps:**
+1. **Swap Components:** Test using a known-working LED or resistor.
+2. **Inspect Circuit:** Look for any loose connections or signs of physical damage.
+3. **Review Schematics:** Verify that the wiring matches the design specifications.
+
+---
+
+## Common Software Issues & Troubleshooting
+
+### 1. Cannot Login to the Webpage
+
+**Symptoms:**
+- The webpage fails to load.
+
+**Troubleshooting Steps:**
+1. **Network Check:** Ensure that the user’s device is on the same network as the Raspberry Pi.
+2. **IP Address & Port Verification:** Confirm that the correct IP address and port are being used (e.g., `192.168.1.2:5000`).
+3. **Service Status:** SSH into the Raspberry Pi and verify the service is running using:
+
+sudo systemctl status stoplightv2.service
+
+If the service isn’t running, start it. If it fails to start, escalate the issue to Tier 2 support.
+
+You can now copy and use this Markdown content. The Raspberry Pi GPIO Pinout and J8 Pin Mapping sections will display as plain text, preserving their formatting, while the rest of the document renders as standard Markdown. Let me know if you need any further adjustments!

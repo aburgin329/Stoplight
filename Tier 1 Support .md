@@ -1,5 +1,3 @@
-Below is the updated Markdown documentation where the Raspberry Pi GPIO Pinout and J8 Pin Mapping are wrapped in HTML <pre> tags so that they display as plain text while the rest of the document renders normally.
-
 # Stoplight Control System – Hardware and Software Support Documentation
 
 ## Overview

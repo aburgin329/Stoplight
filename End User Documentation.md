@@ -15,7 +15,7 @@ The system is controlled through your web browser, and all changes you make are 
 
 ## 2. Getting Started
 
-### 2.1 Accessing the Interface
+### 2.1 Accessing the Stoplight Program
 
 1. **Connect to the Network:**  
    Ensure your computer or mobile device is on the same network as the Raspberry Pi.

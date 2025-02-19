@@ -45,10 +45,10 @@ Directly under the stoplight is the power button (displayed as a power icon). Th
 - **Control Sections:**  
 Below the stoplight and power button, you’ll find:
 
-- **Automatic Controls:**  
+## - **Automatic Controls:**  
  Buttons to **Start Auto, Stop Auto**, and access **Settings**.
 
-- **Manual Controls:**  
+## - **Manual Controls:**  
  A button for **Manual Cycle** (to manually step through the light sequence).
 
 - **Off pop up:**  
